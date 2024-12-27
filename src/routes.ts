@@ -48,10 +48,16 @@ router.post("/make-reservation", (req : Request, res : Response) => {
         makeReservation(req.body).then(async () => {
             // Send the notification
             
-            const response = await axios.get<any>(`${notificationServiceUrl}/notification/send`);
+            const response = await axios.post<any>(`${notificationServiceUrl}/notification/send`,  
+                {}, 
+                {
+                headers: {
+                  "Content-Type": "application/json"
+                }}
+            );
             res.status(StatusCodes.CREATED).json({message: 'Appointment added successfully !'})
         }).catch((error) => {
-            console.log("Error while adding the patient");
+            console.log("Error while adding the patient", error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'Error while adding the patient'})
         });
     } catch (error) {
