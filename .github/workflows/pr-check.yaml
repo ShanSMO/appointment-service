@@ -18,8 +18,8 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_UN }}
           password: ${{ secrets.DOCKER_HUB_PW }}
           
-      # - name: Build and Push Docker Image
-      #   run: |
-      #     docker build -t ${{ secrets.DOCKER_HUB_UN }}/appointment-service:${{ github.sha }} .
-      #     docker push ${{ secrets.DOCKER_HUB_UN }}/appointment-service:${{ github.sha }}  
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_HUB_UN }}/appointment-service:${{ github.sha }} .
+          docker push ${{ secrets.DOCKER_HUB_UN }}/appointment-service:${{ github.sha }}  
             
