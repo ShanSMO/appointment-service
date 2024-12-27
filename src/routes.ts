@@ -1,7 +1,13 @@
 import express, {Request, Response} from "express";
 import {StatusCodes} from "http-status-codes"
 import { Appointment } from "./modals/appointment";
-import { getAllAppointments, getAppointment, makeReservation } from "./services/registrationService";
+import { getAllAppointments, getAppointment, makeReservation } from "./services/reservation-service";
+import * as dotevnv from "dotenv";
+import axios from "axios";
+
+dotevnv.config()
+
+const notificationServiceUrl = process.env.NOTIFICATION_SERVICE_URL;
 
 export const router = express.Router()
 const timeLog = (_req: any, _res: any, next: () => void) => {
@@ -39,8 +45,11 @@ router.get('/', (req, res) => {
 
 router.post("/make-reservation", (req : Request, res : Response) => {
     try {
-        makeReservation(req.body).then(() => {
-            res.status(StatusCodes.CREATED).json({message: 'Patient registered successfully !'})
+        makeReservation(req.body).then(async () => {
+            // Send the notification
+            
+            const response = await axios.get<any>(`${notificationServiceUrl}/notification/send`);
+            res.status(StatusCodes.CREATED).json({message: 'Appointment added successfully !'})
         }).catch((error) => {
             console.log("Error while adding the patient");
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'Error while adding the patient'})

@@ -15,7 +15,7 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({extended : true}))
 app.use(cors())
-app.use('/doctor', router)
+app.use('/appointment', router)
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}/`);
