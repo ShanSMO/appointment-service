@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CD Pipeline
 
 on:
   push:
@@ -9,17 +9,23 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Authenticate with EKS
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Update kubeconfig
         run: |
           aws eks update-kubeconfig --region  us-east-1 --name cw-cluster
 
       - name: Deploy to EKS
+        env:
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          kubectl set image deployment/appointment-service appointment-service=${{ secrets.DOCKER_HUB_UN }}/appointment-service:${{ github.sha }}
-          kubectl rollout status deployment/appointment-service: 
+          kubectl set image deployment/appointment-service appointment-service=${{ secrets.DOCKER_HUB_UN }}/appointment-service:${MAGE_TAG}
+          kubectl rollout status deployment/appointment-service
          
       
      
