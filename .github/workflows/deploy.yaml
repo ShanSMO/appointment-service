@@ -24,7 +24,7 @@ jobs:
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          kubectl set image deployment/appointment-service appointment-service=${{ secrets.DOCKER_HUB_UN }}/appointment-service:${MAGE_TAG}
+          kubectl set image deployment/appointment-service appointment-service=${{ secrets.DOCKER_HUB_UN }}/appointment-service:${IMAGE_TAG}
           kubectl rollout status deployment/appointment-service
          
       
