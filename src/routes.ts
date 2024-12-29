@@ -16,6 +16,11 @@ const timeLog = (_req: any, _res: any, next: () => void) => {
   }
 router.use(timeLog)
 
+router.get('/health', (req, res) => {
+    res.status(StatusCodes.OK).json({message: 'healthy'})
+});
+
+
 router.get('/all', (req, res) => {
     getAllAppointments().then((data) => {
         console.log(data);
@@ -36,18 +41,16 @@ router.get('/', (req, res) => {
 
     }
     getAppointment(appointment).then((data) => {
-        res.status(StatusCodes.CREATED).json({message: 'Patient registered successfully !', data: data})
+        res.status(StatusCodes.OK).json({message: 'Success', data: data})
     }).catch((error) => {
-        console.log("Error while fetching patient list", error);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'Error while fetching patient list'})
+        console.log("Error while fetching appointment data", error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'Error while fetching appointment data'})
     });
 })
 
 router.post("/make-reservation", (req : Request, res : Response) => {
     try {
         makeReservation(req.body).then(async () => {
-            // Send the notification
-            
             const response = await axios.post<any>(`${notificationServiceUrl}/notification/send`,  
                 {}, 
                 {
@@ -57,8 +60,8 @@ router.post("/make-reservation", (req : Request, res : Response) => {
             );
             res.status(StatusCodes.CREATED).json({message: 'Appointment added successfully !'})
         }).catch((error) => {
-            console.log("Error while adding the patient", error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'Error while adding the patient'})
+            console.log("Error while adding the appointment", error);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'Error while adding the appointment'})
         });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error})
